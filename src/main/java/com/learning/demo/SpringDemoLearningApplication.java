@@ -2,12 +2,19 @@ package com.learning.demo;
 
 import com.learning.demo.entity.Guest;
 import com.learning.demo.entity.Manager;
+import com.learning.demo.entity.manytomany.Amenities;
+import com.learning.demo.entity.manytomany.Package;
+import com.learning.demo.repository.AmenitiesRepository;
+import com.learning.demo.repository.PackageRepository;
 import com.learning.demo.service.GuestService;
 import com.learning.demo.service.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Use CommandLineRunner
@@ -24,6 +31,13 @@ public class SpringDemoLearningApplication implements CommandLineRunner {
     @Autowired
     ManagerService managerService;
 
+    @Autowired
+    PackageRepository packageRepository;
+
+    @Autowired
+    AmenitiesRepository amenitiesRepository;
+
+
     public static void main(String[] args) {
 
         SpringApplication.run(SpringDemoLearningApplication.class, args);
@@ -33,6 +47,7 @@ public class SpringDemoLearningApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         initGuests();
         initManagers();
+        initAmenities();
     }
 
     private void initGuests()
@@ -52,5 +67,41 @@ public class SpringDemoLearningApplication implements CommandLineRunner {
         managerService.createManager(new Manager("George", "Williams", "george@hotel.com"));
     }
 
+    private void initAmenities() {
+        Amenities amenities = new Amenities();
+        amenities.setAmenitiesCode("MYAMENITY001");
+        amenities.setAmenitiesType("Golf");
 
+        Set<Package> packageSet = new HashSet<>();
+
+        Package amenitiesPackage = new Package();
+        amenitiesPackage.setPackageName("Free meal on the course");
+        amenitiesPackage.setPackageCode("PKG001");
+
+        packageRepository.save(amenitiesPackage);
+
+        packageSet.add(amenitiesPackage);
+        amenities.setPackageSet(packageSet);
+
+        Amenities amenitiesSaved = amenitiesRepository.save(amenities);
+
+        //=========================================
+
+        Amenities amenities2 = new Amenities();
+        amenities2.setAmenitiesCode("MYAMENITY002");
+        amenities2.setAmenitiesType("AXE Throwing");
+
+        Set<Package> packageSet2 = new HashSet<>();
+
+        Package amenitiesPackage2 = new Package();
+        amenitiesPackage2.setPackageName("Free AXE");
+        amenitiesPackage2.setPackageCode("PKG002");
+
+        packageRepository.save(amenitiesPackage2);
+
+        packageSet2.add(amenitiesPackage2);
+        amenities2.setPackageSet(packageSet2);
+
+        Amenities amenitiesSaved2 = amenitiesRepository.save(amenities2);
+    }
 }
